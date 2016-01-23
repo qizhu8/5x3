@@ -1,0 +1,8 @@
+% function [freq_offset, delay] = f_freq_time_est(sign, matchfilter_f, freq_range)
+
+% % % % % % % % % % % % % % 
+clc,clear,close all;
+load vars
+sign = sign_cn_out_t;
+
+% % % % % % % % % % % % % % 

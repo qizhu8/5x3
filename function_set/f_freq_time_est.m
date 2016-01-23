@@ -1,4 +1,14 @@
-function [freq_offset, delay] = f_freq_time_est(sign, symbol)
+% function [freq_offset, delay] = f_freq_time_est(sign, matchfilter_f, freq_range, fs)
 
-freq_offset = 0;
-delay = 0;
+% % % % % % % % % % % % % % 
+clc,clear,close all;
+load vars
+sign = sign_ch_out_t;
+freq_range = freq_est_range;
+clear sign_ch_out_t freq_est_range freq_est_resolution;
+% % % % % % % % % % % % % % 
+
+A = exp(-j * 2 * pi )
+for index = 1:length(freq_range)
+    
+end

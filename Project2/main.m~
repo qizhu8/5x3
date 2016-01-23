@@ -11,8 +11,8 @@ freq_offset = 0.002;              % preset frequency offset /Hz
 phase_offset = 0;                  %  phase offset /rad
 noise_amp = 0.01;                % noise amplitude
 delay = 0;                             % delay for reveiver  /chip
-freq_est_resolution = 0.001;  % the density/resolution of freq scan
-freq_est_range = (-25:25)*freq_est_resolution;  % the freq offset we are going to scan
+freq_est_resolution = 0.001;
+freq_est_range = -
 
 %%--pre-allocated variable--%%
 xlen = 0;                               % code length / chirp number
@@ -64,9 +64,9 @@ t_range = (0:xlen-1)/fs;
 %                                                                                 %
 % % % % % % % % % % % % % % % % % % % % % % 
 %%--channel--%%
-sign_ch_out_t = sign_out_t  ;
+sign_cn_out_t = sign_out_t  ;
 % add freq offset
-sign_ch_out_t = sign_ch_out_t .* exp(j*2*pi * t_range * freq_offset + j * phase_offset);
+sign_cn_out_t = sign_cn_out_t .* exp(j*2*pi * t_range * freq_offset + j * phase_offset);
 
 % % % % % % % % % % % % % % % % % % % % % % 
 %                                                                                 %
@@ -81,15 +81,16 @@ sign_ch_out_t = sign_ch_out_t .* exp(j*2*pi * t_range * freq_offset + j * phase_
 
 %%--generate the matched filter--%%
 hf_r = f_SRRC_generator(T, alpha, f_range);
-% hf_r = hf;
-matchfilter_f = conj(sf .* hf_r);
 
 %%--freq&time estimation--%%
-save vars sign_ch_out_t matchfilter_f freq_est_range fs freq_offset delay 
-% [freq_est, ~] = f_freq_time_est(sign_cn_out_t, matchfilter_f, freq_est_range);
+% [freq_est, ~] = f_freq_time_est(sign_cn_out_t, hf_r, freq_est_range, freq_est_resolution);
 
 %%--after SRRC-filter on Reciver--%%
-rec_sign_f = fft(sign_ch_out_t);
+rec_sign_f = fft(sign_cn_out_t);
+
+
+% hf_r = hf;
+matchfilter_f = conj(sf .* hf_r);
 
 
 %%--impliment match filter--%%
