@@ -4,15 +4,15 @@ addpath('../function_set/')
 %%--parameters--%%
 % Ns = 1;                                 % # of sumbols 
 fmax = 1;                             % max freq for signal /Hz
-fs = 32*fmax;                       % sampling rat /Hz
+fs = 2*fmax;                       % sampling rat /Hz
 T = 1/fmax;                          % transmition period /sec // Duration of symboll /sec
 alpha = 0.35;                        % Square Root Raise Cosine filter's alpha 
-freq_offset = 0.002;              % preset frequency offset /Hz
+freq_offset = 0.7;                  % preset frequency offset /Hz
 phase_offset = 0;                  %  phase offset /rad
 noise_amp = 0.01;                % noise amplitude
 delay = 0;                             % delay for reveiver  /chip
 freq_est_resolution = 0.001;  % the density/resolution of freq scan
-freq_est_range = (-25:25)*freq_est_resolution;  % the freq offset we are going to scan
+freq_est_range = -1: freq_est_resolution: 1;  % the freq offset we are going to scan
 
 %%--pre-allocated variable--%%
 xlen = 0;                               % code length / chirp number
@@ -85,8 +85,11 @@ hf_r = f_SRRC_generator(T, alpha, f_range);
 matchfilter_f = conj(sf .* hf_r);
 
 %%--freq&time estimation--%%
-save vars sign_ch_out_t matchfilter_f freq_est_range fs freq_offset delay 
-% [freq_est, ~] = f_freq_time_est(sign_cn_out_t, matchfilter_f, freq_est_range);
+% save vars sign_ch_out_t matchfilter_f freq_est_range fs freq_offset delay 
+[freq_est, ~] = f_freq_time_est(sign_ch_out_t, matchfilter_f, freq_est_range, fs);
+freq_est
+
+sign_ch_out_t = sign_ch_out_t .*exp(-j * 2 * pi * t_range * freq_est); % kill the frequency offset
 
 %%--after SRRC-filter on Reciver--%%
 rec_sign_f = fft(sign_ch_out_t);
