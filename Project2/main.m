@@ -8,11 +8,13 @@ fs = 2*fmax;                       % sampling rat /Hz
 T = 1/fmax;                          % transmition period /sec // Duration of symboll /sec
 alpha = 0.35;                        % Square Root Raise Cosine filter's alpha 
 freq_offset = 0.4;                  % preset frequency offset /Hz
-phase_offset = pi/2;                  %  phase offset /rad
+phase_offset = pi/4;                  %  phase offset /rad
 noise_amp = 0.01;                % noise amplitude
 delay = 0;                             % delay for reveiver  /chip
 freq_est_resolution = 0.001;  % the density/resolution of freq scan
 freq_est_range = -fmax: freq_est_resolution: fmax;  % the freq offset we are going to scan
+
+phase_est_resolution = pi/360;
 
 %%--pre-allocated variable--%%
 xlen = 0;                               % code length / chirp number
@@ -57,14 +59,14 @@ sign_f = xf .* hf;
 sign_out_t = ifft(sign_f);
 
 %%--form the time axis--%%
-t_range = (0:xlen-1)/fs;
+t_range = (0:xlen-1 + delay)/fs;
 % % % % % % % % % % % % % % % % % % % % % % 
 %                                                                                 %
 %                               Channel Part                              %
 %                                                                                 %
 % % % % % % % % % % % % % % % % % % % % % % 
 %%--channel--%%
-sign_ch_out_t = sign_out_t  ;
+sign_ch_out_t = [zeros(1, delay), sign_out_t]  ;
 % add freq offset
 sign_ch_out_t = sign_ch_out_t .* exp(j*2*pi * t_range * freq_offset + j * phase_offset);
 
@@ -86,24 +88,28 @@ matchfilter_f = conj(sf .* hf_r);
 
 %%--freq&time estimation--%%
 % save vars sign_ch_out_t matchfilter_f freq_est_range fs freq_offset delay 
-[freq_est, ~] = f_freq_time_est(sign_ch_out_t, matchfilter_f, freq_est_range, fs);
+[freq_est, delay_est] = f_freq_time_est(sign_ch_out_t, matchfilter_f, freq_est_range, fs);
 freq_est
 
 sign_ch_out_t = sign_ch_out_t .*exp(-j * 2 * pi * t_range * freq_est); % kill the frequency offset
+sign_ch_out_t = sign_ch_out_t(delay+1:end);                                    % kill the delay
 
+% % % % figure(5)
+% % % % plot(real(sign_ch_out_t))
 %%--phase estimation--%%
-phase_est = f_phase_est(sign_ch_out_t, matchfilter_f);
+% save vars sign_ch_out_t matchfilter_f phase_est_resolution
+phase_est = f_phase_est(sign_ch_out_t, matchfilter_f, phase_est_resolution);
 sign_ch_out_t = sign_ch_out_t .* exp(-j*phase_est);
-
-%%--after SRRC-filter on Reciver--%%
 
 rec_sign_f = fft(sign_ch_out_t);
 
 
 %%--impliment match filter--%%
-match_out_f = rec_sign_f .* matchfilter_f;
+match_out_f_r = rec_sign_f .* matchfilter_f;
+match_out_f_i = rec_sign_f * exp(-j*pi/2) .* matchfilter_f;
 
-
+match_out_t_r = ifft(match_out_f_r);
+match_out_t_i = ifft(match_out_f_i);
 
 %%--plot--%%
 % figure(1);
@@ -139,7 +145,8 @@ match_out_f = rec_sign_f .* matchfilter_f;
 
 figure(4);
 % plot((0:xlen-1)*dt,  real(ifft(match_out_f)) /dt);
-plot((0:xlen-1)*dt,  real(ifft(match_out_f)) /dt/sqrt(T));
+% plot((0:xlen-1)*dt,  real(ifft(match_out_f)) /dt/sqrt(T));
+plot((0:xlen-1)*dt,  real(match_out_t_i) /dt/sqrt(T));
 hold on;
 plot((0:xlen-1)*dt,  slen*ones(1, xlen)/sqrt(T), 'r');
 hold on;
