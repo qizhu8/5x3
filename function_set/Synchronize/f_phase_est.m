@@ -22,4 +22,6 @@ while phase_delat >= phase_est_resolution && index < 10000
     index = index + 1;
 %     [phase_range, matchVal, minloc]
 end
-phase_est = -phase_try;
+phase_candidate = [phase_try, phase_try+pi, phase_try - pi];
+[~, target] = min(abs(phase_candidate));
+phase_est = phase_candidate(target);

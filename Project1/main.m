@@ -16,7 +16,7 @@ symbol = f_mseq([1, 3, 6], [1, 0, 0, 0, 0], 1);
 % symbol = [1, 0, 0, 0, 1, 1, 1, 0, 1, 1];
 % symbol = [-1, +1, +1, +1, -1, -1, -1, +1, -1, -1];
 
-databits = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1]*2-1;
+databits = [1]*2-1;
 % databits = [1]
 x = kron([0, databits], symbol); %  the 0 here is to aviod negative frequence parts
 
@@ -39,7 +39,7 @@ hf = f_SRRC_generator(T, alpha, f_range);
 % hf = Tb * sinc(f_range * Tb) .* exp(-j * pi * f_range * Tb); 
 
 %%--form the signal--%%
-sign_f = xf .* hf;
+sign_f = xf .* hf.*hf;
 
 %%--channel--%%
 sign_out_f = sign_f;
