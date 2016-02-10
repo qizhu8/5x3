@@ -8,6 +8,7 @@ G = [
     0, 0, 0, 1, 0, 1, 1
     ];									% (7, 4) Hamming code's generator matrix
 k = -6:10;
+niterations = 2;
 ebn0db = zeros(size(k));
 ber = zeros(size(k));
 cb = f_generateCodeBook(G);
@@ -39,24 +40,60 @@ for k_index = 1:length(k)
         LHRCVD = 2*r(:, 1:7) * sqrt(E) / sigma^2;   % extr
         LVRCVD = 2*[r(:,1:4)' r(:,8:10)]*sqrt(E)/sigma^2;
         
-        niterations = 2;
         for j = 1 : niterations
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %  Compute the likelihoods based on horizontal         %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            Ltemp = [LHRCVD(1:4,1:4)*LVext(1:4,1:4)' LHRCVD(:,5:7)];
             
+            LHN = zeros(4,4);
+            LHD = zeros(4,4);
+            for kcolbit = 1 : 4
+                for krowblt = 1 : 4
+                    for m = 1 : 16
+                        A = exp((1-cb(m,:))*Ltemp(krowbit,:)');
+                        if cb(m,kcolbit) == 0
+                            LHN(krowbit,kcolbit) = LHN(krowbit,kcolbit) + A;
+                        else
+                            LHD(krowbit,kcolbit) = LHD(krowbit,kcolbit) + A;
+                        end
+                    end
+                end
+            end
+            
+            LH = log(LHN./LHD);
+            LHext = LH - LVext' - LHRCVD(1:4,1:4);
             %  FILL IN THIS PART
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %  Compute the likelihoods based on vertical           %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            Ltemp = [LVRCVD(1:4,1:4)*LHext(1:4,1:4)' LVRCVD(:,5:7)];
+            
+            LVN = zeros(4,4);
+            LVD = zeros(4,4);
+            for kcolbit = 1 : 4
+                for krowblt = 1 : 4
+                    for m = 1 : 16
+                        A = exp((1-cb(m,:))*Ltemp(krowbit,:)');
+                        if cb(m,kcolbit) == 0
+                            LVN(krowbit,kcolbit) = LVN(krowbit,kcolbit) + A;
+                        else
+                            LVD(krowbit,kcolbit) = LVD(krowbit,kcolbit) + A;
+                        end
+                    end
+                end
+            end
+            
+            LV = log(LVN./LVD);
+            LVext = LV - LHext' - LVRCVD(1:4,1:4);
             
             %  FILL IN THIS PART
-            LVext = zeros(4, 4);
-            LHext = zeros(4, 4);
+            %LVext = zeros(4, 4);
+            %LHext = zeros(4, 4);
         end;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
