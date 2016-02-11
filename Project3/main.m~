@@ -7,8 +7,8 @@ G = [
     0, 0, 1, 0, 1, 1, 0
     0, 0, 0, 1, 0, 1, 1
     ];									% (7, 4) Hamming code's generator matrix
-k = -6%:10;
-niterations = 1;
+k = -6:10;
+niterations = 2;
 ebn0db = k/2;
 ber = zeros(size(k));
 cb = f_generateCodeBook(G);
@@ -22,7 +22,7 @@ for k_index = 1:length(k)
     nerrors = 0;                            	% number of error bits
     ntrials = 0;                                % number of total bits
     if (k_index < 13)							% set threshold for simulation
-        threshold = 1%2000;
+        threshold = 2000;
     else
         threshold = 1000;
     end
@@ -35,8 +35,8 @@ for k_index = 1:length(k)
         LHext = zeros(4, 4);
         c = [b, 1 - 2*ph(:, 5:7), 1-2*pv(:, 5:7)];	% translated codeword 4x10.
         r = sqrt(E) * c + sigma * randn(4, 10);		% received vector + noise
-        LHRCVD = 2*r(:, 1:7) * sqrt(E) / sigma^2;   % extrinisic H information
-        LVRCVD = 2*[r(:,1:4)' r(:,8:10)]*sqrt(E)/sigma^2;   % extrinisic 
+        LHRCVD = 2*r(:, 1:7) * sqrt(E) / sigma^2;   % extrinisic Horizontal information
+        LVRCVD = 2*[r(:,1:4)' r(:,8:10)]*sqrt(E)/sigma^2;   % extrinisic Vertical information
         
         for j = 1 : niterations
             
@@ -63,7 +63,6 @@ for k_index = 1:length(k)
             
             LH = log(LHN./LHD);
             LHext = LH - LVext' - LHRCVD(1:4,1:4);
-            %  FILL IN THIS PART
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %  Compute the likelihoods based on vertical           %
@@ -74,7 +73,7 @@ for k_index = 1:length(k)
             LVN = zeros(4,4);
             LVD = zeros(4,4);
             for kcolbit = 1 : 4
-                for krowblt = 1 : 4
+                for krowbit = 1 : 4
                     for m = 1 : 16
                         A = exp((1-cb(m,:))*Ltemp(krowbit,:)');
                         if cb(m,kcolbit) == 0
@@ -85,7 +84,6 @@ for k_index = 1:length(k)
                     end
                 end
             end
-            
             LV = log(LVN./LVD);
             LVext = LV - LHext' - LVRCVD(1:4,1:4);
         end;

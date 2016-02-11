@@ -8,7 +8,7 @@ G = [
     0, 0, 0, 1, 0, 1, 1
     ];									% (7, 4) Hamming code's generator matrix
 k = -6:10;
-niterations = 1;
+niterations = 4;
 ebn0db = k/2;
 ber = zeros(size(k));
 cb = f_generateCodeBook(G);
@@ -44,8 +44,8 @@ for k_index = 1:length(k)
             %  Compute the likelihoods based on horizontal         %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            Ltemp = [LHRCVD(1:4,1:4)*LVext(1:4,1:4)' LHRCVD(:,5:7)];
-            
+            Ltemp = [LHRCVD(1:4,1:4)+LVext(1:4,1:4)' LHRCVD(:,5:7)];
+                        
             LHN = zeros(4,4);
             LHD = zeros(4,4);
             for kcolbit = 1 : 4
@@ -63,13 +63,12 @@ for k_index = 1:length(k)
             
             LH = log(LHN./LHD);
             LHext = LH - LVext' - LHRCVD(1:4,1:4);
-            %  FILL IN THIS PART
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %  Compute the likelihoods based on vertical           %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            Ltemp = [LVRCVD(1:4,1:4)*LHext(1:4,1:4)' LVRCVD(:,5:7)];
+            Ltemp = [LVRCVD(1:4,1:4)+LHext(1:4,1:4)' LVRCVD(:,5:7)];
             
             LVN = zeros(4,4);
             LVD = zeros(4,4);
@@ -93,7 +92,7 @@ for k_index = 1:length(k)
         %  Compute the decisions based on likelihoods          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
         
-        bh = sign(LHRCVD(1:4,1:4) + LVext(1:4,1:4)' + LHext(1:4,1:4));
+        bh = sign(LHRCVD(1:4,1:4) + LVext(1:4,1:4) + LHext(1:4,1:4));
         nerrors = nerrors + 16 - sum(sum(bh == b));
         if mod(ntrials,500) == 0
             [ntrials nerrors]
