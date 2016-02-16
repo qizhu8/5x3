@@ -1,6 +1,6 @@
 clc,clear,close all
-addpath('../funcset/coding')
-
+addpath('../funcset_set/coding')
+tic
 G=[
     1, 0, 0, 0, 1, 0, 1
     0, 1, 0, 0, 1, 1, 1,
@@ -22,10 +22,10 @@ for SNR_index = 1 : length(SNR_range)
     sigma=sqrt(N0/2);
     nerrors=0;
     ntrials=0;
-    if (SNR < 7) threshold=20; end
-    if (SNR >+ 7) threshold=10; end
+    if (SNR < 7) threshold=2000; end
+    if (SNR >+ 7) threshold=1000; end
     
-    while nerrors < threshold,
+    while nerrors < threshold
         ntrials=ntrials+1;
         b=sign(rand(4,4)-0.5);
         ph=mod(-0.5*(b-1)*G,2);
@@ -51,12 +51,13 @@ for SNR_index = 1 : length(SNR_range)
             %  Compute the likelihoods based on horizontal         %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            Htemp = [LHRCVD(1:4,1:4)+LVext' LHRCVD(:,5:7)];
             LHN = zeros(4,4);
             LHD = zeros(4,4);
             for krowbit = 1 : 4
                 for kcolbit = 1 : 4
-                    Htemp = [LHRCVD(1:4,1:4)+LVext' LHRCVD(:,5:7)];
-                    Htemp(:, kcolbit) = 0;
+%                     Htemp = [LHRCVD(1:4,1:4)+LVext' LHRCVD(:,5:7)];
+%                     Htemp(:, kcolbit) = 0;
                     for m = 1 : size(cb, 1)
                         A = exp((1-cb(m,:))*(Htemp(krowbit,:)'));
                         if cb(m,kcolbit) == 0
@@ -73,13 +74,14 @@ for SNR_index = 1 : length(SNR_range)
             %  Compute the likelihoods based on vertical           %
             %  parity checks (including extrinisic and apriori)    %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            Ltemp = [LVRCVD(1:4,1:4)+LHext' LVRCVD(:,5:7)];
             
             LVN = zeros(4,4);
             LVD = zeros(4,4);
             for krowbit = 1 : 4
                 for kcolbit = 1 : 4
                     Ltemp = [LVRCVD(1:4,1:4)+LHext' LVRCVD(:,5:7)];
-                    Ltemp(:, kcolbit) = 0;
+%                     Ltemp(:, kcolbit) = 0;
                     for m = 1 : size(cb, 1)
                         A = exp((1-cb(m,:))*Ltemp(krowbit, :)');
                         if cb(m, kcolbit) == 0
@@ -116,3 +118,4 @@ axis([-3 6 1e-5 1])
 grid on
 xlabel('E_b/N_0 (dB)','FontSize',16)
 ylabel('BER','FontSize',16)
+toc
