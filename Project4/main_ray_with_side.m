@@ -22,8 +22,8 @@ for SNR_index = 1 : length(SNR_range)
     sigma=sqrt(N0/2);
     nerrors=0;
     ntrials=0;
-    if (SNR < 7) threshold=errorForSmallSNR; end
-    if (SNR >= 7) threshold=errorForLargeSNR; end
+    if (SNR < 7) threshold=2000; end
+    if (SNR >= 7) threshold=1000; end
     while nerrors < threshold,
         ntrials=ntrials+1;
         b=sign(rand(4,4)-0.5);
@@ -40,12 +40,12 @@ for SNR_index = 1 : length(SNR_range)
         r=attenuation * sqrt(E) .* c+sigma*randn(4,10);          % This is the received vector (4 x 10)
         %         LHRCVD=2*r(:,1:7)*sqrt(E)/sigma^2;                   % This is the extrinisic H information
         %         LVRCVD=2*[r(:,1:4)' r(:,8:10)]*sqrt(E)/sigma^2;      % This is the extrinisic V information
-        
+        tmp_attenuation = [attenuation(:,1:4)' attenuation(:,8:10)];
         tmpr = [r(:,1:4)' r(:,8:10)];
         for row = 1:4
             for col = 1:7
-                LHRCVD(row, col) = f_likelihood_soft(r(row, col), N0, sigma2, E);
-                LVRCVD(row, col) = f_likelihood_soft(tmpr(row, col), N0, sigma2, E);
+                LHRCVD(row, col) = f_likelihood_hard(r(row, col), N0, attenuation(row, col), E);
+                LVRCVD(row, col) = f_likelihood_hard(tmpr(row, col), N0, tmp_attenuation(row, col), E);
             end
         end
         
@@ -119,7 +119,7 @@ for SNR_index = 1 : length(SNR_range)
     end;                         % End of loop for the number of trials
     ntrials
     ber(SNR_index)=nerrors/ntrials/16
-    save product_ray_no_side
+    save product_ray_with_side
     semilogy(ebn0db,ber,'r')
     axis([-3 6 1e-6 1])
     grid on

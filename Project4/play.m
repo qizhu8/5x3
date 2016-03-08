@@ -1,0 +1,3 @@
+clc,clear,close all
+main_ray_no_side
+main_ray_with_side

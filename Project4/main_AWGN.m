@@ -22,8 +22,8 @@ for SNR_index = 1 : length(SNR_range)
     sigma=sqrt(N0/2);
     nerrors=0;
     ntrials=0;
-    if (SNR < 7) threshold=2000; end
-    if (SNR >= 7) threshold=1000; end
+    if (SNR < 7) threshold=errorForSmallSNR; end
+    if (SNR >= 7) threshold=errorForLargeSNR; end
     while nerrors < threshold,
         ntrials=ntrials+1;
         b=sign(rand(4,4)-0.5);
@@ -108,8 +108,8 @@ for SNR_index = 1 : length(SNR_range)
         end
     end;                         % End of loop for the number of trials
     ntrials
-    ber(k)=nerrors/ntrials/16
-    save product_awgn
+    ber(SNR_index)=nerrors/ntrials/16
+    save product_awgn_consec
     semilogy(ebn0db,ber,'r')
     axis([-3 6 1e-6 1])
     grid on
