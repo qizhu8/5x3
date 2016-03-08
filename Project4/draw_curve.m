@@ -23,13 +23,16 @@ save ber ber_awgn ber_with_side ber_no_side ebn0db
 clear;
 
 load ber
-semilogy(ebn0db(1:17), ber_awgn, 'rd'); hold on;
-semilogy(ebn0db, ber_no_side(1:length(ebn0db)), 'gx'); hold on;
-semilogy(ebn0db, ber_with_side(1:length(ebn0db)), 'bo'); hold on;
+semilogy(ebn0db(1:length(ber_awgn)), ber_awgn, 'rd'); hold on;
+semilogy(ebn0db(1:length(ber_no_side)), ber_no_side, 'gx'); hold on;
+semilogy(ebn0db(1:length(ber_with_side)), ber_with_side, 'bo'); hold on;
+
+semilogy(ebn0db(1:length(ber_awgn)), ber_awgn, 'r'); hold on;
+semilogy(ebn0db(1:length(ber_no_side)), ber_no_side, 'g'); hold on;
+semilogy(ebn0db(1:length(ber_with_side)), ber_with_side, 'b'); hold on;
 
 delete ber.mat
 
 grid on;
 legend('AWGN Channel', 'Rayleigh Fading without Side Info', 'Rayleigh Fading with Side Info');
-
-pause(200)
+print('AWGN_Rayleigh_w_o_side_info', '-dpng')

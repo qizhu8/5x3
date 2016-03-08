@@ -9,5 +9,5 @@ SNR_range = -6:10;
 ebn0db = SNR_range / 2;
 sigma2 = 0.5;
 
-errorForSmallSNR = 2000;
-errorForLargeSNR = 100;
+errorForSmallSNR = 3000;
+errorForLargeSNR = 1000;
