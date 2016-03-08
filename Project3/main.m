@@ -1,5 +1,5 @@
 clc,clear,close all
-addpath('../funcset_set/coding')
+addpath('../function_set/coding/')
 tic
 G=[
     1, 0, 0, 0, 1, 0, 1
@@ -23,7 +23,7 @@ for SNR_index = 1 : length(SNR_range)
     nerrors=0;
     ntrials=0;
     if (SNR < 7) threshold=2000; end
-    if (SNR >+ 7) threshold=1000; end
+    if (SNR >= 7) threshold=1000; end
     
     while nerrors < threshold
         ntrials=ntrials+1;
