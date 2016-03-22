@@ -14,8 +14,8 @@ plotOn = 0;
 % T = 1;
 % alpha = 0.125;
 % % range = -1 : 0.1 : 1;
-% range = linspace(-1, 1, 100);
-% timeDomain_onoff = 0;
+% range = linspace(-1, 1, 5);
+% timeDomain_onoff = 1;
 % plotOn = 1; % for debug
 % % % % % % % % % % % % % % %
 
@@ -23,8 +23,8 @@ coe = zeros(size(range));
 if ~timeDomain_onoff
     f = range;
     % freq domain
-        coe = sqrt( T/2 * ( 1 - sin( pi * T .* (abs(f) - 1/2/T)/alpha  ) ) ); % there is something wrong with the last formula
-%     coe = sqrt(T .* cos( pi * T / 2 / alpha .* (abs(f) - (1 - alpha)/2/T) ).^2);
+    coe = sqrt( T/2 * ( 1 - sin( pi * T .* (abs(f) - 1/2/T)/alpha  ) ) ); % there is something wrong with the last formula
+    %     coe = sqrt(T .* cos( pi * T / 2 / alpha .* (abs(f) - (1 - alpha)/2/T) ).^2);
     
     % flat part
     freq_thres1 = (1 - alpha) /2/T;
@@ -56,7 +56,7 @@ end
 if plotOn
     grid on
     hold on
-%     coe = fftshift(ifft(coe));
+    %     coe = fftshift(ifft(coe));
     plot(range, coe, 'b-');hold on;
     plot(range, coe, 'r*');
 end

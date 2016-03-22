@@ -1,6 +1,6 @@
 clc,clear,close all;
-addpath('../function_set/')
-
+addpath('../function_set/Source/')
+addpath('../function_set/Filter/')
 Tb = 1;                                 % Duration of signal
 Ns = 1;                                 % # of sumbols
 fmax = 1;                             % max freq for signal
@@ -97,8 +97,9 @@ figure(4);
 plot((0:xlen-1)*dt,  real(ifft(match_out_f)) /dt/sqrt(T));
 hold on;
 plot((0:xlen-1)*dt,  slen*ones(1, xlen)/sqrt(T), 'r');
-hold on;
+% hold on;
 plot((0:xlen-1)*dt,  slen*-ones(1, xlen)/sqrt(T), 'r');
-hold on;
+% hold on;
+grid on
 xlabel('time/sec')
 ylabel('amplitude/V')
