@@ -1,5 +1,5 @@
 % parameter
-userNum = 2;
+userNum = 1;
 userCodeBlockLen = 80;
 spreadCodeLen = 8;
 G=[
