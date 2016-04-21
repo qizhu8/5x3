@@ -1,7 +1,7 @@
 clc,clear,close all;
-addpath('../function_set/Coding')
-addpath('../function_set/Modulation')
-
+addpath('../function_set/Coding/')
+addpath('../function_set/Modulation/')
+addpath('../function_set/Package/')
 
 % load parameters
 parameter
@@ -10,11 +10,11 @@ parameter
 userBits = randi(2, userNum, infoBits_block * userCodeBlockLen)-1;
 
 % form package
-testInfoBits = randi(2, 1, 1000)*100;
+% testInfoBits = randi(2, 1, 1000)*100;
 preIndex = 0;
-[package, endIndex] = f_formPackage(testInfoBits, packageFormator, preIndex, 1);
+[package, endIndex] = f_formPackage(userBits, packageFormator, preIndex, 1);
 
-
+package = -ones(size(package));
 waveForm_send = f_userOutput(...
     package,...             % data
     spreadCodeSet(1,:),...  % spread code 1
@@ -22,6 +22,9 @@ waveForm_send = f_userOutput(...
     spreadCodeSet(2,:));    % spread code 2
 
 
+% % % % % % % % % % % % % 
+testCov = conv(waveForm_send, fliplr(kron(packageFormator.trainingSeq, spreadCodeSet(2,:))));
+plot(testCov)
 
 
 
