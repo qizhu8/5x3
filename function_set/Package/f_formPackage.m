@@ -32,7 +32,7 @@ packageIndex_bin = dec2bin(packageIndex, packageFormator.indexLen) - '0';
 
 % form storage info
 storageInfo = zeros(numberOfPackage, packageFormator.capLen);
-storageInfo(numberOfPackage, :) = dec2bin(packageFormator.packageCap - numberOfAddedZeros, packageFormator.capLen) - '0';
+storageInfo(numberOfPackage, :) = dec2bin(mod(packageFormator.packageCap - numberOfAddedZeros, packageFormator.packageCap), packageFormator.capLen) - '0';
 
 % form address
 addressInfo = ones(numberOfPackage, 1) * address;
