@@ -1,0 +1,14 @@
+clc,clear,close all;
+addpath('../function_set/Coding')
+addpath('../function_set/Modulation')
+
+
+% load parameters
+parameter
+
+% generate random 0,1 bits.
+userBits = randi(2, userNum, infoBits_block * userCodeBlockLen)-1;
+
+for userIndex = 1:userNum
+userOutput(userIndex, :) = f_userOutput(userBits(userIndex, :), spreadCodeSet((userIndex-1)*2+1, :), trainSbl, 
+end
