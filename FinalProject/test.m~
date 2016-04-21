@@ -1,27 +1,18 @@
 clc,clear,close all;
 addpath('../function_set/coding/')
-addpath('../function_set/Package/')
-addpath('../function_set/Modulation/')
 userNum = 2;
 userCodeBlockLen = 1;
 spreadCodeLen = 8;
-threshold = spreadCodeLen * 0.8;
+threshold = spreadCodeLen * 0.5;
 G=[
     1, 0, 0, 0, 1, 0, 1
     0, 1, 0, 0, 1, 1, 1,
     0, 0, 1, 0, 1, 1, 0,
     0, 0, 0, 1, 0, 1, 1
     ];
-% spreadCodeLib = f_getGoodCorrCodeSet(spreadCodeLen);
-% spreadCodeSet = spreadCodeLib{1};
-% save spreadCodeSet spreadCodeSet
-load spreadCodeSet
-% spreadCodeSet = [
-%     1,1,1,1,-1,1,1,-1
-%     -1,1,-1,1,-1,-1,-1,-1
-%     ];
+spreadCodeLib = f_getGoodCorrCodeSet(spreadCodeLen);
 
-
+spreadCodeSet = spreadCodeLib{1};
 
 codeLen = size(G, 1) * size(G, 1) * userCodeBlockLen;
 sourceSeq = randi(2, 1, codeLen)*2 - 3;
@@ -30,7 +21,7 @@ coded = f_TurboCoding(sourceSeq, G);
 
 userOutput = zeros(userNum, length(coded)*spreadCodeLen);
 for userIndex = 1:userNum
-    userOutput(userIndex, :) = f_userOutput(coded, spreadCodeSet(userIndex, :));
+    userOutput(userIndex, :) = kron(coded, spreadCodeSet(userIndex, :));
 end
 
 RF_signal_send = sum(userOutput, 1);
@@ -38,6 +29,7 @@ RF_signal_rec = RF_signal_send;
 
 
 userCor = zeros(userNum, length(RF_signal_rec) + spreadCodeLen - 1);
+
 userDecor = zeros(userNum, length(RF_signal_rec)/spreadCodeLen);
 % hold on
 for userIndex = 1:userNum
@@ -51,10 +43,6 @@ for userIndex = 1:userNum
         elseif userCor(userIndex, chipIndex) < -threshold
             userDecor(userIndex, bitIndex) = -1;
             bitIndex = bitIndex + 1;
-        end
-        if bitIndex > 40
-            chipIndex
-            break;
         end
     end
 end
