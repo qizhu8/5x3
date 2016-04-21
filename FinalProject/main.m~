@@ -9,6 +9,14 @@ parameter
 % generate random 0,1 bits.
 userBits = randi(2, userNum, infoBits_block * userCodeBlockLen)-1;
 
-for userIndex = 1:userNum
-userOutput(userIndex, :) = f_userOutput(userBits(userIndex, :), spreadCodeSet((userIndex-1)*2+1, :), trainSbl, 
-end
+% form package
+testInfoBits = randi(2, 1, 1000)*100;
+preIndex = 0;
+[package, endIndex] = f_formPackage(testInfoBits, packageFormator, preIndex, 1);
+
+
+waveForm_send = f_userOutput(package, kron(ones())
+
+
+
+[outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(package, packageFormator);
