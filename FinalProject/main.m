@@ -14,19 +14,28 @@ userBits = randi(2, userNum, infoBits_block * userCodeBlockLen)-1;
 preIndex = 0;
 [package, endIndex] = f_formPackage(userBits, packageFormator, preIndex, 1);
 
-package = -ones(size(package));
+
+chCoded = f_TurboCoding(package, G);
+
 waveForm_send = f_userOutput(...
-    package,...             % data
+    chCoded,... %,...             % data
     spreadCodeSet(1,:),...  % spread code 1
     kron(ones(1, endIndex - preIndex), packageFormator.trainingSeq),... % training
     spreadCodeSet(2,:));    % spread code 2
 
 
 % % % % % % % % % % % % % 
-testCov = conv(waveForm_send, fliplr(kron(packageFormator.trainingSeq, spreadCodeSet(2,:))));
-plot(testCov)
+waveForm_rec = waveForm_send + sigma * rand(size(waveForm_send));
 
 
+% % % % % % % % % % % % % 
+testCov = conv(waveForm_rec, fliplr(kron(packageFormator.trainingSeq, spreadCodeSet(2,:))));
+% plot(testCov)
+
+seqOut = chopper_decimator(waveForm_rec, testCov, packageFormator, spreadCodeSet(1,:), 5000);
 
 
-[outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(package, packageFormator);
+chDecoded = f_TurboDecoding(seqOut, G, sigma, E, f_generateCodeBook(G), iteration);
+% chDecoded = f_TurboDecoding(chCoded, G, sigma, E, f_generateCodeBook(G), iteration);
+[outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(chDecoded, packageFormator);
+nnz(outputBits - userBits)

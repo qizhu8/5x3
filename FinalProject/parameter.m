@@ -1,6 +1,6 @@
 % parameter
 userNum = 1;
-userCodeBlockLen = 80;
+userCodeBlockLen = 16 * 10;
 spreadCodeLen = 8;
 G=[
     1, 0, 0, 0, 1, 0, 1
@@ -8,6 +8,11 @@ G=[
     0, 0, 1, 0, 1, 1, 0
     0, 0, 0, 1, 0, 1, 1
     ];
+iteration = 2;
+sigma = 10;
+E = 1;
+
+
 [G_row, G_col] = size(G);
 infoBits_block = G_row * G_row;
 totalBits_block = G_row * (2 * G_col - G_row);
@@ -39,7 +44,7 @@ packageCap = 2^capLen; % length of info bits in this package
 headerLen = indexLen + addLen + capLen + CRCLen;
 packageLen = headerLen + packageCap;
 
-trainingSeq = randi(2, 1, packageLen)*2-3; % a training seq of the same length of the package
+trainingSeq = randi(2, 1, packageLen / infoBits_block * totalBits_block)*2-3; % a training seq of the same length of the package
 
 packageFormator.indexLen = indexLen;
 packageFormator.addLen = addLen;
@@ -49,6 +54,7 @@ packageFormator.packageCap = packageCap;
 packageFormator.headerLen = headerLen;
 packageFormator.packageLen = packageLen;
 packageFormator.trainingSeq = trainingSeq;
+packageFormator.trainingLen = packageLen / infoBits_block * totalBits_block;
 
 % address
 userAdd = dec2bin(1:userNum, packageFormator.addLen);

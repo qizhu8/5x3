@@ -6,3 +6,5 @@ for blockIndex = 1:blockLen
     decoded = f_TurboDecoding_block(signalBlock(blockIndex, :), G, sigma, E, cb, iter);
     decodedSignal((blockIndex-1)*16+1:blockIndex*16) = decoded;
 end
+
+decodedSignal = (decodedSignal+1)/2;
