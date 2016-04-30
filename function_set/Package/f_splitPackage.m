@@ -1,4 +1,4 @@
-function [outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(packageInfo, packageFormator)
+function [outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(packageInfo, packageFormator, forceChop)
 
 % package format
 % ----------------------------------------------------
@@ -36,8 +36,12 @@ infoBits = packageInfo(:, preLen+1:end);
 
 outputBits = zeros(1, sum(storageInfo));
 preLen = 0;
-for index = 1:numberOfPackage
-%     [preLen + 1, preLen+storageInfo(index)]
-    outputBits(preLen + 1:preLen+storageInfo(index)) = infoBits(index,1:storageInfo(index));
-    preLen = preLen+storageInfo(index);
+if forceChop == 1
+    outputBits = reshape(infoBits', 1, []);
+else
+    for index = 1:numberOfPackage
+        %     [preLen + 1, preLen+storageInfo(index)]
+        outputBits(preLen + 1:preLen+storageInfo(index)) = infoBits(index,1:storageInfo(index));
+        preLen = preLen+storageInfo(index);
+    end
 end

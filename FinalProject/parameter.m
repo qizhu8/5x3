@@ -5,7 +5,7 @@ addpath('../function_set/Package/')
 
 userNum = 1;
 userCodeBlockLen = 16 * 100;
-spreadCodeLen = 16;
+spreadCodeLen = 15;
 G=[
     1, 0, 0, 0, 1, 0, 1
     0, 1, 0, 0, 1, 1, 1
@@ -39,11 +39,13 @@ elseif spreadCodeLen == 15
     seq2 = f_mseq([3, 4, 5], [1, 0, 0, 0], 1);
     seq1(seq1 == -1) = 0;
     seq2(seq2 == -1) = 0;
+    chunkIndex = 10;
     spreadCodeSet = [
         seq1 + seq2
-        seq1 + [seq2(14:15), seq2(1:13)]
+        seq1 + [seq2(chunkIndex:15), seq2(1:chunkIndex-1)]
         ];
     spreadCodeSet = mod(spreadCodeSet, 2)*2-1;
+%     sum(spreadCodeSet')
     % M-seq
     %     spreadCodeSet = [
     %         f_mseq([1, 2, 5], [1, 0, 0, 0], 1)
@@ -57,8 +59,8 @@ elseif spreadCodeLen == 15
 elseif spreadCodeLen == 16
     % searched
     spreadCodeSet = [
-            -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1
-            -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, 1
+        -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, 1
+        -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1
         ];
 end
 

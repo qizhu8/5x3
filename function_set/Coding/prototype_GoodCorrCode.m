@@ -4,7 +4,7 @@
 % clc,clear,close all;
 % addpath('../function_set/coding/')
 
-codeLen = 4;
+codeLen = 8;
 codeNum = 2^codeLen;
 codebook = f_generateCodeBook(eye(codeLen))*2-1;
 
@@ -98,3 +98,4 @@ codeSet = cell(length(goodSeqSet), 1);
 for index = 1:length(goodSeqSet)
     codeSet{index} = codebook(goodSeqSet{index}, :);
 end
+codeSet{index}

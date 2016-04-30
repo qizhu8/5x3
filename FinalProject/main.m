@@ -46,5 +46,5 @@ for SNR_index = startPoint:length(SNR_range)
     semilogy(SNR_range, BER);
 end
 load train
-delete tmpProgress.mat
+% delete tmpProgress.mat
 sound(y,Fs)

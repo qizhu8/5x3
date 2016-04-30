@@ -8,9 +8,9 @@ if nargin < 1 || nargin > 3
     error('parameter of f_mseq is ''header'', ''initstat'', and ''polarfying'', please check');
 end
 
-if header(1) ~= 1
-    error('the first entry of ''header'' must be 1');
-end
+% if header(1) ~= 1
+%     error('the first entry of ''header'' must be 1');
+% end
 
 if nargin < 3
     polarfying = 0;
