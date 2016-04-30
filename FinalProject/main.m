@@ -1,41 +1,50 @@
 clc,clear,close all;
-addpath('../function_set/Coding/')
-addpath('../function_set/Modulation/')
-addpath('../function_set/Package/')
 
-% load parameters
-parameter
+SNR_range = -25:-5;
 
-% generate random 0,1 bits.
-userBits = randi(2, userNum, infoBits_block * userCodeBlockLen)-1;
+% errorThres_low = 30;
+% errorThres_mid = 200
+% errorThres_high = 30000;
+% SNR_thres_mid = -15;
+% SNR_thres_high = -7;
 
-% form package
-% testInfoBits = randi(2, 1, 1000)*100;
-preIndex = 0;
-[package, endIndex] = f_formPackage(userBits, packageFormator, preIndex, 1);
+error = zeros(size(SNR_range));
+baseNum = zeros(size(SNR_range));
 
-
-chCoded = f_TurboCoding(package, G);
-
-waveForm_send = f_userOutput(...
-    chCoded,... %,...             % data
-    spreadCodeSet(1,:),...  % spread code 1
-    kron(ones(1, endIndex - preIndex), packageFormator.trainingSeq),... % training
-    spreadCodeSet(2,:));    % spread code 2
+resume = 0; % if resume = 0, start from scratch, or start from last result
 
 
-% % % % % % % % % % % % % 
-waveForm_rec = waveForm_send + sigma * rand(size(waveForm_send));
+if resume ~= 0;
+    load tmpProgress.mat
+    startPoint = SNR_index;
+else
+    delete tmpProgress.mat
+    startPoint = 1;
+end
 
-
-% % % % % % % % % % % % % 
-testCov = conv(waveForm_rec, fliplr(kron(packageFormator.trainingSeq, spreadCodeSet(2,:))));
-% plot(testCov)
-
-seqOut = chopper_decimator(waveForm_rec, testCov, packageFormator, spreadCodeSet(1,:), 5000);
-
-
-chDecoded = f_TurboDecoding(seqOut, G, sigma, E, f_generateCodeBook(G), iteration);
-% chDecoded = f_TurboDecoding(chCoded, G, sigma, E, f_generateCodeBook(G), iteration);
-[outputBits, packageIndex, address, storageInfo, CRC_bin] = f_splitPackage(chDecoded, packageFormator);
-nnz(outputBits - userBits)
+for SNR_index = startPoint:length(SNR_range)
+    SNR = SNR_range(SNR_index);
+%     if SNR >= SNR_thres_high
+%         errorThres = errorThres_low;
+%     elseif SNR >= SNR_thres_mid
+%         errorThres = errorThres_mid;
+%     else
+%         errorThres = errorThres_low;
+%     end
+    errorThres = (3*exp(-0.31*SNR)-2);
+    drawSwitch = 1;
+    while error(SNR_index) < errorThres
+        [error(SNR_index), errorThres]
+        [errorBits, infoBits] = f_txrxch(SNR, drawSwitch);
+        error(SNR_index) = error(SNR_index) + errorBits;
+        baseNum(SNR_index) = baseNum(SNR_index) + infoBits;
+        save tmpProgress SNR_index SNR_range error baseNum
+        drawSwitch = 0;
+    end
+    BER = error./ baseNum;
+    figure(2)
+    semilogy(SNR_range, BER);
+end
+load train
+delete tmpProgress.mat
+sound(y,Fs)
